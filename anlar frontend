@@ -1,0 +1,44 @@
+import { Component, OnInit } from '@angular/core';
+import { PlayerService } from 'path-to-player-service'; // Import your player service
+
+@Component({
+  selector: 'app-player-management',
+  templateUrl: './player-management.component.html',
+  styleUrls: ['./player-management.component.css']
+})
+export class PlayerManagementComponent implements OnInit {
+  players: any[]; // Define the player array
+  newPlayer: any = {};
+
+  constructor(private playerService: PlayerService) { }
+
+  ngOnInit(): void {
+    this.loadPlayers();
+  }
+
+  loadPlayers() {
+    this.playerService.getPlayers().subscribe((data: any) => {
+      this.players = data;
+    });
+  }
+
+  addPlayer() {
+    this.playerService.addPlayer(this.newPlayer).subscribe(() => {
+      this.loadPlayers(); // Reload the player list
+      this.newPlayer = {}; // Clear the form
+    });
+  }
+}
+<h2>Player Management</h2>
+
+<form (submit)="addPlayer()">
+  <input [(ngModel)]="newPlayer.name" placeholder="Name" required>
+  <input [(ngModel)]="newPlayer.team" placeholder="Team" required>
+  <button type="submit">Add Player</button>
+</form>
+
+<ul>
+  <li *ngFor="let player of players">
+    {{ player.name }} ({{ player.team }})
+  </li>
+</ul>
